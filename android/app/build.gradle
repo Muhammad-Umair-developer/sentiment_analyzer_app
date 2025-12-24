@@ -1,0 +1,58 @@
+plugins {
+    id("com.android.application")
+    // START: FlutterFire Configuration
+    id("com.google.gms.google-services")
+    // END: FlutterFire Configuration
+    id("kotlin-android")
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id("dev.flutter.flutter-gradle-plugin")
+}
+
+android {
+    // This is your app's unique name
+    namespace = "com.example.sentiment_analysis"
+    
+    // Using explicit version 36 to ensure compatibility with modern tools and plugins
+    compileSdk = 36
+    ndkVersion = flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+
+    defaultConfig {
+        // This must match your package name in Firebase and X Developer Portal
+        applicationId = "com.example.sentiment_analysis"
+        
+        // Twitter login and Firebase usually require at least minSdk 21
+        minSdkVersion = flutter.minSdkVersion 
+        targetSdk = 36
+        
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+        
+        // Essential for older plugins to prevent "method limit" errors
+        multiDexEnabled = true
+    }
+
+    buildTypes {
+        release {
+            // TODO: Add your own signing config for the release build.
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+}
+
+flutter {
+    source = "../.."
+}
+
+dependencies {
+    // This ensures your app can handle multidex if the Twitter SDK is large
+    implementation("androidx.multidex:multidex:2.0.1")
+}
