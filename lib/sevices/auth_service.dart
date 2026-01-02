@@ -7,7 +7,8 @@ class AuthService {
   Future<User?> signUp(String email, String password) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
-        email: email, password: password
+        email: email,
+        password: password,
       );
       return result.user;
     } catch (e) {
@@ -20,7 +21,8 @@ class AuthService {
   Future<User?> login(String email, String password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
-        email: email, password: password
+        email: email,
+        password: password,
       );
       return result.user;
     } catch (e) {
@@ -28,4 +30,19 @@ class AuthService {
       return null;
     }
   }
+
+  // Logout logic
+  Future<void> logout() async {
+    try {
+      await _auth.signOut();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  // Get current user
+  User? get currentUser => _auth.currentUser;
+
+  // Check if user is logged in
+  bool get isLoggedIn => _auth.currentUser != null;
 }

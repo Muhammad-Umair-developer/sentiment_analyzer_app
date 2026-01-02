@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -164,159 +165,166 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        backgroundColor: const Color(0xFFFDEEF1),
-        body: Stack(
-          children: [
-            Positioned(
-              top: -80,
-              left: -80,
-              child: CircleAvatar(
-                radius: 150,
-                backgroundColor: Colors.pink.withValues(alpha: 0.1),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+      ),
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Scaffold(
+          backgroundColor: const Color(0xFFFDEEF1),
+          body: Stack(
+            children: [
+              Positioned(
+                top: -80,
+                left: -80,
+                child: CircleAvatar(
+                  radius: 150,
+                  backgroundColor: Colors.pink.withValues(alpha: 0.1),
+                ),
               ),
-            ),
-            SafeArea(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 30.0,
-                    vertical: 20.0,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 60),
-                      const Text(
-                        "Welcome Back",
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+              SafeArea(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30.0,
+                      vertical: 20.0,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 60),
+                        const Text(
+                          "Welcome Back",
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          const Text(
-                            "Don't have an account? ",
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            const Text(
+                              "Don't have an account? ",
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 16,
+                              ),
+                            ),
+                            _buildInstantTextButton(
+                              "Sign up",
+                              const Color(0xFF1967B2),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const SignUpPage(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 40),
+                        _buildTextField("Email", controller: _emailController),
+                        const SizedBox(height: 20),
+                        _buildTextField(
+                          "Password",
+                          controller: _passwordController,
+                          isPassword: true,
+                        ),
+                        const SizedBox(height: 10),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: _buildInstantTextButton(
+                            "Forgot Password?",
+                            const Color(0xFF3A51E3),
+                            onPressed: _handleForgotPassword,
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 55,
+                          child: ElevatedButton(
+                            onPressed: _isLoading ? null : _handleLogin,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF1967B2),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text(
+                                    "Login",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 50),
+                        const Center(
+                          child: Text(
+                            "Or continue with",
                             style: TextStyle(
                               color: Colors.black54,
-                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
                             ),
                           ),
-                          _buildInstantTextButton(
-                            "Sign up",
-                            const Color(0xFF1967B2),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const SignUpPage(),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 40),
-                      _buildTextField("Email", controller: _emailController),
-                      const SizedBox(height: 20),
-                      _buildTextField(
-                        "Password",
-                        controller: _passwordController,
-                        isPassword: true,
-                      ),
-                      const SizedBox(height: 10),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: _buildInstantTextButton(
-                          "Forgot Password?",
-                          const Color(0xFF3A51E3),
-                          onPressed: _handleForgotPassword,
                         ),
-                      ),
-                      const SizedBox(height: 30),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 55,
-                        child: ElevatedButton(
-                          onPressed: _isLoading ? null : _handleLogin,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1967B2),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                        const SizedBox(height: 30),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildSocialIconButton(
+                              FontAwesomeIcons.facebookF,
+                              const Color(0xFF1877F2),
+                              30,
+                              "Facebook",
                             ),
-                          ),
-                          child: _isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Text(
-                                  "Login",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                            const SizedBox(width: 25),
+                            _buildSocialIconButton(
+                              FontAwesomeIcons.google,
+                              const Color(0xFFDB4437),
+                              26,
+                              "Google",
+                              onPressed: _handleGoogleSignIn,
+                            ),
+                            const SizedBox(width: 25),
+                            // --- LINKED X (TWITTER) BUTTON ---
+                            _buildSocialIconButton(
+                              FontAwesomeIcons.xTwitter,
+                              Colors.black,
+                              26,
+                              "X (Twitter)",
+                              onPressed: _handleTwitterSignIn,
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 50),
-                      const Center(
-                        child: Text(
-                          "Or continue with",
-                          style: TextStyle(
-                            color: Colors.black54,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildSocialIconButton(
-                            FontAwesomeIcons.facebookF,
-                            const Color(0xFF1877F2),
-                            30,
-                            "Facebook",
-                          ),
-                          const SizedBox(width: 25),
-                          _buildSocialIconButton(
-                            FontAwesomeIcons.google,
-                            const Color(0xFFDB4437),
-                            26,
-                            "Google",
-                            onPressed: _handleGoogleSignIn,
-                          ),
-                          const SizedBox(width: 25),
-                          // --- LINKED X (TWITTER) BUTTON ---
-                          _buildSocialIconButton(
-                            FontAwesomeIcons.xTwitter,
-                            Colors.black,
-                            26,
-                            "X (Twitter)",
-                            onPressed: _handleTwitterSignIn,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                    ],
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
